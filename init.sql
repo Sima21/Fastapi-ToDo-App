@@ -8,6 +8,5 @@ USE todo_app;
 CREATE TABLE IF NOT EXISTS todos (
     No INT AUTO_INCREMENT PRIMARY KEY,
     Todoitem VARCHAR(255) NOT NULL,
-    Status ENUM('open', 'in progress', 'finished') NOT NULL DEFAULT 'open',
-    Actions VARCHAR(255) NOT NULL
+    Status ENUM('open', 'in progress', 'finished') NOT NULL DEFAULT 'open'
 );

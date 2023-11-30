@@ -45,7 +45,7 @@ def read_root(request: Request):
 async def save_task(request: Request, task: str = Form(...)):
     try:
         # Update the query to use the correct column names
-        query = "INSERT INTO todos (`Todoitem`, `Status`, `Actions`) VALUES (%s, 'open', '');"
+        query = "INSERT INTO todos (`Todoitem`, `Status`) VALUES (%s, 'open');"
 
         # Create a buffered cursor
         cursor_insert = conn.cursor(buffered=True)
@@ -62,6 +62,26 @@ async def save_task(request: Request, task: str = Form(...)):
 
     except Exception as e:
         return {"message": f"Error saving task: {str(e)}"}
+    
+@app.post("/delete")
+async def delete_task(request: Request, No: list = Form(...)):
+    try:
+        # Update the query to delete the task by task_id
+        query = "DELETE FROM todos WHERE No = %s;"
 
+        # Create a buffered cursor
+        cursor_delete = conn.cursor(buffered=True)
+
+        # Execute the query with the task_id parameter
+        cursor_delete.execute(query, (No))
+        conn.commit()
+        print(No)
+        # Close the cursor after the query
+        cursor_delete.close()
+
+        response = RedirectResponse(url="http://localhost:8000/", status_code=302)
+        return response
+    except Exception as e:
+        return {"message": f"Error deleting task: {str(e)}"}
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)

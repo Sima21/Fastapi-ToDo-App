@@ -45,13 +45,14 @@
                                 <tbody>
                                     {% for row in data %}
                                     <tr>
-                                        <th scope="row">{{ row['No'] }}</th>
+                                        <td>{{ row['No'] }}</td>
                                         <td>{{ row['Todoitem'] }}</td>
                                         <td>{{ row['Status'] }}</td>
                                         <td>{{ row['Actions'] }}</td>
                                         
                                         <td class="d-flex">
-                                            <form class="w-50">
+                                            <form method="post" action="/delete" class="w-50">
+                                                <input type="hidden" name="No" value="{{row['No']}}">
                                                 <button type="submit" class="btn btn-danger">Delete</button>
                                             </form>
                                             <form class="w-50">
