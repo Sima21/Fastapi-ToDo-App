@@ -1,17 +1,31 @@
-## Todo App
-Erstelle eine Todo App, im templates Folder findest Du das HTML Markup dass Du für die Anwendung benötigst.
-Folgende Funktionalität soll die ToDo Anwendung enthalten:
+In Datenbank musst ihr genau eine Tabele erstellen:
 
-1. Erstellen eines ToDos
-2. ToDos anzeigen
-3. Status eines ToDos ändern von "open" zu "in progess"
-4. Status ändern von "in progress" zu "finished"
-5. Löschen eines ToDos
+mysql> SELECT * FROM todos;
++----+-----------+--------+---------+
+| No | Todo item | Status | Actions |
++----+-----------+--------+---------+
 
-Die einzelenen ToDos sollen in einer MYSQL Datenbank gespeichert werden inkl. deren Zustand.
+--
 
-Erstelle Dir ein Repository in Deinem Github Account und übertrage den Code dorthin.
-Achte darauf, dass Du die Inhalte des VENV nicht mit in Dein Repo überträgst.
+mysql Commands:
 
-### Zusatzaufgabe
-Deploye Deine Anwendung auf einer EC2 Instanz inkl. Datenbank.
+-- Select or create a database
+CREATE DATABASE IF NOT EXISTS your_database_name;
+USE your_database_name;
+
+
+-- Create the 'todos' table
+
+CREATE TABLE IF NOT EXISTS todos (
+    No INT AUTO_INCREMENT PRIMARY KEY,
+    `Todo item` VARCHAR(255) NOT NULL,
+    `Status` VARCHAR(255) NOT NULL,
+    `Actions` VARCHAR(255) NOT NULL
+);
+
+
+------------
+Das braucht ihr nicht :
+das ist nur für info.
+ALTER TABLE todos MODIFY COLUMN No INT DEFAULT 0;
+ALTER TABLE todos MODIFY COLUMN No INT AUTO_INCREMENT PRIMARY KEY;
