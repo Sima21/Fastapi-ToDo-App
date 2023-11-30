@@ -48,14 +48,15 @@
                                         <td>{{ row['No'] }}</td>
                                         <td>{{ row['Todoitem'] }}</td>
                                         <td>{{ row['Status'] }}</td>
-                                        <td>{{ row['Actions'] }}</td>
                                         
                                         <td class="d-flex">
                                             <form method="post" action="/delete" class="w-50">
                                                 <input type="hidden" name="No" value="{{row['No']}}">
                                                 <button type="submit" class="btn btn-danger">Delete</button>
                                             </form>
-                                            <form class="w-50">
+                                            <form action="/update" method="post" class="w-50">
+                                                <input type="hidden" name="Status" value="in progress">
+                                                <input type="hidden" name="No" value="{{row['No']}}">
                                                 <button type="submit" class="btn btn-success ms-1">Start</button>
                                             </form>
                                         </td>
