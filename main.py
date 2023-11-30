@@ -1,0 +1,66 @@
+import os
+from fastapi import FastAPI, Form, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+import uvicorn
+import mysql.connector
+
+app = FastAPI()
+templates = Jinja2Templates(directory="src/templates")
+
+# Database connection details
+db_config = {
+    "host": "localhost",
+    "user": "root",
+    "password": "",
+    "database": "todo_app",
+}
+
+# Mount the "static" directory as a static directory
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Establish a database connection
+conn = mysql.connector.connect(**db_config)
+cursor = conn.cursor()
+
+@app.get("/", response_class=HTMLResponse)
+def read_root(request: Request):
+    # Fetch data from the database
+    query = "SELECT * FROM todos;"
+    cursor.execute(query)
+    result = cursor.fetchall()
+
+    # Extract column names
+    columns = [desc[0] for desc in cursor.description]
+
+    # Combine column names and rows into a list of dictionaries
+    data = [dict(zip(columns, row)) for row in result]
+
+    # Construct the relative path to the template file
+    template_path = "index.html"
+    return templates.TemplateResponse(template_path, {"request": request, "data": data})
+
+@app.post("/save-task/")
+async def save_task(request: Request, task_name: str = Form(...)):
+    try:
+        # Update the query to use the correct column names
+        query = "INSERT INTO todos (`Todo item`, `Status`, `Actions`) VALUES (%s, 'open', '');"
+
+        # Create a buffered cursor
+        cursor_insert = conn.cursor(buffered=True)
+
+        # Execute the query with the task_name parameter
+        cursor_insert.execute(query, (task_name,))
+        conn.commit()
+
+        # Close the cursor after the query
+        cursor_insert.close()
+
+        return {"message": "Task saved successfully!"}
+
+    except Exception as e:
+        return {"message": f"Error saving task: {str(e)}"}
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
