@@ -23,7 +23,7 @@
                                 action="/save-task/" method="post">
                                 <div class="col-12">
                                     <div class="form-outline">
-                                        <input type="text" id="form1" name="task_name" class="form-control"
+                                        <input type="text" id="form1" name="task" class="form-control"
                                             placeholder="Enter task here" required />
                                     </div>
                                 </div>
@@ -37,7 +37,7 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">No.</th>
-                                        <th scope="col">Todo item</th>
+                                        <th scope="col">Task</th>
                                         <th scope="col">Status</th>
                                         <th scope="col">Actions</th>
                                     </tr>
@@ -46,8 +46,10 @@
                                     {% for row in data %}
                                     <tr>
                                         <th scope="row">{{ row['No'] }}</th>
-                                        <td>{{ row['Todo item'] }}</td>
+                                        <td>{{ row['Todoitem'] }}</td>
                                         <td>{{ row['Status'] }}</td>
+                                        <td>{{ row['Actions'] }}</td>
+                                        
                                         <td class="d-flex">
                                             <form class="w-50">
                                                 <button type="submit" class="btn btn-danger">Delete</button>

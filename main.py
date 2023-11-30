@@ -1,6 +1,6 @@
 import os
 from fastapi import FastAPI, Form, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
@@ -12,13 +12,13 @@ templates = Jinja2Templates(directory="src/templates")
 # Database connection details
 db_config = {
     "host": "localhost",
-    "user": "root",
-    "password": "",
+    "user": "todo_user",
+    "password": "ToDoList2023!",
     "database": "todo_app",
 }
 
 # Mount the "static" directory as a static directory
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Establish a database connection
 conn = mysql.connector.connect(**db_config)
@@ -42,22 +42,23 @@ def read_root(request: Request):
     return templates.TemplateResponse(template_path, {"request": request, "data": data})
 
 @app.post("/save-task/")
-async def save_task(request: Request, task_name: str = Form(...)):
+async def save_task(request: Request, task: str = Form(...)):
     try:
         # Update the query to use the correct column names
-        query = "INSERT INTO todos (`Todo item`, `Status`, `Actions`) VALUES (%s, 'open', '');"
+        query = "INSERT INTO todos (`Todoitem`, `Status`, `Actions`) VALUES (%s, 'open', '');"
 
         # Create a buffered cursor
         cursor_insert = conn.cursor(buffered=True)
 
         # Execute the query with the task_name parameter
-        cursor_insert.execute(query, (task_name,))
+        cursor_insert.execute(query, (task,))
         conn.commit()
 
         # Close the cursor after the query
         cursor_insert.close()
-
-        return {"message": "Task saved successfully!"}
+        response = RedirectResponse(url="http://localhost:8000/", status_code=302)
+        return response
+        # return {"message": "Task saved successfully!"}
 
     except Exception as e:
         return {"message": f"Error saving task: {str(e)}"}
