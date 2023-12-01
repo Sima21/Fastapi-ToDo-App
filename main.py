@@ -1,4 +1,3 @@
-import os
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -83,5 +82,21 @@ async def delete_task(request: Request, No: list = Form(...)):
         return response
     except Exception as e:
         return {"message": f"Error deleting task: {str(e)}"}
+    
+@app.post("/update")
+async def update_status(request: Request, No: list = Form(...)):
+    try:
+        query = "UPDATE todos SET Status = 'in progress' WHERE No = %s;"
+        cursor_update = conn.cursor(buffered=True)
+        cursor_update.execute(query, (No))
+        conn.commit()
+        cursor_update.close
+        response = RedirectResponse(url="http://localhost:8000/", status_code=302)
+        return response
+    except Exception as e:
+        return {"message": f"Error updating task: {str(e)}"}
+
+
+
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
