@@ -1,4 +1,3 @@
-import os
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -6,16 +5,20 @@ from fastapi.templating import Jinja2Templates
 import uvicorn
 import mysql.connector
 
+
 app = FastAPI()
 templates = Jinja2Templates(directory="src/templates")
 
 # Database connection details
 db_config = {
-    "host": "localhost",
-    "user": "todo_user",
-    "password": "ToDoList2023!",
-    "database": "todo_app",
+    'user': 'todouser',
+    'password': 'Passw0rd',  # Use the actual password you specified during user creation
+    'host': 'localhost',
+    'database': 'todo_app',  # Replace with the actual database name
+    'auth_plugin': 'mysql_native_password',  # Specify the authentication plugin
 }
+# Establish a connection
+conn = mysql.connector.connect(**db_config)
 
 # Mount the "static" directory as a static directory
 # app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -45,7 +48,7 @@ def read_root(request: Request):
 async def save_task(request: Request, task: str = Form(...)):
     try:
         # Update the query to use the correct column names
-        query = "INSERT INTO todos (`Todoitem`, `Status`) VALUES (%s, 'open');"
+        query = "INSERT INTO todos (`Todo item`, `Status`) VALUES (%s, 'in process');"
 
         # Create a buffered cursor
         cursor_insert = conn.cursor(buffered=True)
@@ -56,9 +59,9 @@ async def save_task(request: Request, task: str = Form(...)):
 
         # Close the cursor after the query
         cursor_insert.close()
+        
         response = RedirectResponse(url="http://localhost:8000/", status_code=302)
         return response
-        # return {"message": "Task saved successfully!"}
 
     except Exception as e:
         return {"message": f"Error saving task: {str(e)}"}
@@ -78,10 +81,25 @@ async def delete_task(request: Request, No: list = Form(...)):
         print(No)
         # Close the cursor after the query
         cursor_delete.close()
-
         response = RedirectResponse(url="http://localhost:8000/", status_code=302)
         return response
     except Exception as e:
         return {"message": f"Error deleting task: {str(e)}"}
+    
+@app.post("/update")
+async def update_status(request: Request, No: list = Form(...)):
+    try:
+        query = "UPDATE todos SET Status = 'Task Finished' WHERE No = %s;"
+        cursor_update = conn.cursor(buffered=True)
+        cursor_update.execute(query, (No))
+        conn.commit()
+        cursor_update.close
+        response = RedirectResponse(url="http://localhost:8000/", status_code=302)
+        return response
+    except Exception as e:
+        return {"message": f"Error updating task: {str(e)}"}
+
+
+
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
